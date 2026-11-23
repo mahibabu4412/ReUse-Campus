@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#eef4f1"/>
+<circle cx="700" cy="500" r="170" fill="#dcefe3"/>
+<rect x="200" y="140" width="360" height="360" rx="16" fill="#0d6046"/>
+<rect x="220" y="160" width="320" height="320" rx="10" fill="#f7fbf8"/>
+<text x="255" y="250" font-family="Arial,sans-serif" font-size="30" font-weight="bold" fill="#0d6046">Chapter 4</text>
+<text x="255" y="300" font-family="Arial,sans-serif" font-size="22" fill="#738379">Calculus &amp; Vectors</text>
+<line x1="255" y1="326" x2="505" y2="326" stroke="#d6e8dc" stroke-width="3"/>
+<text x="255" y="380" font-family="Arial,sans-serif" font-size="24" fill="#42544b">lim  x→0</text>
+<text x="255" y="430" font-family="Arial,sans-serif" font-size="24" fill="#42544b">dy/dx = nxⁿ⁻¹</text>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#eef5f0"/>
+<circle cx="120" cy="500" r="150" fill="#dcefe3"/>
+<rect x="230" y="110" width="340" height="390" rx="16" fill="#fffdf7" stroke="#e0d9bf" stroke-width="4"/>
+<line x1="270" y1="170" x2="530" y2="170" stroke="#1f9d6b" stroke-width="6" stroke-linecap="round"/>
+<g stroke="#cfd8cf" stroke-width="4" stroke-linecap="round">
+<line x1="270" y1="215" x2="520" y2="215"/><line x1="270" y1="248" x2="500" y2="248"/>
+<line x1="270" y1="281" x2="520" y2="281"/><line x1="270" y1="314" x2="470" y2="314"/>
+<line x1="270" y1="347" x2="520" y2="347"/><line x1="270" y1="380" x2="490" y2="380"/>
+<line x1="270" y1="413" x2="520" y2="413"/>
+</g>
+<path d="M520 110 l70 70 -70 0 z" fill="#e4f4eb"/>
+<g transform="translate(560,330) rotate(35)">
+<rect x="0" y="0" width="22" height="160" rx="8" fill="#1f9d6b"/>
+<path d="M0 160 l11 30 11-30 z" fill="#173a2c"/>
+</g>
+<text x="270" y="463" font-family="Arial,sans-serif" font-size="20" fill="#738379">Study Notes</text>
+</svg>

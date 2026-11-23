@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#eef4f0"/>
+<g transform="translate(400,300)" fill="none" stroke="#9cc9ac" stroke-width="10">
+<rect x="-140" y="-100" width="280" height="210" rx="16"/>
+<circle cx="-60" cy="-30" r="22"/>
+<path d="M-140 70 l80 -80 55 55 45 -40 100 90"/>
+</g>
+<text x="400" y="470" font-family="Arial,sans-serif" font-size="26" fill="#738379" text-anchor="middle">ReUse Campus</text>
+</svg>

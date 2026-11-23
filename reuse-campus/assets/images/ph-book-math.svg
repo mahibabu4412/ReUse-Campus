@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#e9f4ee"/>
+<circle cx="640" cy="110" r="150" fill="#d6ecdd"/>
+<circle cx="120" cy="520" r="120" fill="#dcefe3"/>
+<rect x="250" y="130" width="300" height="370" rx="14" fill="#ffffff" stroke="#b9d9c6" stroke-width="4"/>
+<rect x="250" y="130" width="34" height="370" rx="10" fill="#0d6046"/>
+<text x="330" y="215" font-family="Arial,sans-serif" font-size="34" font-weight="bold" fill="#0d6046">MATH</text>
+<text x="330" y="262" font-family="Arial,sans-serif" font-size="20" fill="#738379">Engineering</text>
+<line x1="330" y1="292" x2="510" y2="292" stroke="#e4eae6" stroke-width="3"/>
+<text x="330" y="348" font-family="Arial,sans-serif" font-size="26" fill="#42544b">a² + b² = c²</text>
+<text x="330" y="398" font-family="Arial,sans-serif" font-size="26" fill="#42544b">∫ f(x) dx</text>
+<text x="330" y="448" font-family="Arial,sans-serif" font-size="26" fill="#42544b">Σ n = n(n+1)/2</text>
+</svg>

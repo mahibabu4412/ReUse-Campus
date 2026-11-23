@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#ecf4ef"/>
+<circle cx="640" cy="480" r="160" fill="#dcefe3"/>
+<rect x="190" y="130" width="310" height="370" rx="14" fill="#0d6046"/>
+<rect x="210" y="150" width="270" height="330" rx="8" fill="#f6fbf7"/>
+<text x="240" y="220" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#0d6046">DIGITAL</text>
+<text x="240" y="256" font-family="Arial,sans-serif" font-size="19" fill="#738379">Electronics</text>
+<g transform="translate(240,300)" stroke="#1f9d6b" stroke-width="4" fill="none">
+<rect x="0" y="0" width="60" height="40" rx="5"/><text x="30" y="27" font-size="18" fill="#173a2c" stroke="none" text-anchor="middle">01</text>
+<rect x="90" y="0" width="60" height="40" rx="5"/><text x="120" y="27" font-size="18" fill="#173a2c" stroke="none" text-anchor="middle">10</text>
+<rect x="45" y="80" width="60" height="40" rx="5"/><text x="75" y="107" font-size="18" fill="#173a2c" stroke="none" text-anchor="middle">11</text>
+<line x1="30" y1="40" x2="75" y2="80"/><line x1="120" y1="40" x2="75" y2="80"/>
+</g>
+<g transform="translate(585,235)">
+<rect x="0" y="0" width="150" height="230" rx="20" fill="#173a2c"/>
+<rect x="12" y="20" width="126" height="180" rx="8" fill="#cfe8d6"/>
+<text x="75" y="125" font-family="Arial,sans-serif" font-size="24" fill="#173a2c" text-anchor="middle">eBook</text>
+</g>
+</svg>

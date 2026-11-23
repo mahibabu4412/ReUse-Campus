@@ -1,0 +1,27 @@
+# Dependencies / build outputs
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs / temp
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Uploaded user content (keep directory placeholders)
+reuse-campus-next/public/uploads/listings/*
+!reuse-campus-next/public/uploads/listings/.gitkeep
+reuse-campus-next/public/uploads/profiles/*
+!reuse-campus-next/public/uploads/profiles/.gitkeep
+reuse-campus/assets/uploads/listings/*
+!reuse-campus/assets/uploads/listings/.gitkeep
+reuse-campus/assets/uploads/profiles/*
+!reuse-campus/assets/uploads/profiles/.gitkeep

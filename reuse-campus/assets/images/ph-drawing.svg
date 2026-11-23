@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#edf4ef"/>
+<circle cx="640" cy="120" r="150" fill="#dcefe3"/>
+<rect x="180" y="120" width="440" height="360" rx="18" fill="#ffffff" stroke="#c5ddcd" stroke-width="4"/>
+<path d="M210 420 L340 250 L430 350 L520 200 L590 420 Z" fill="none" stroke="#0d6046" stroke-width="5" stroke-linejoin="round"/>
+<circle cx="340" cy="250" r="7" fill="#1f9d6b"/><circle cx="520" cy="200" r="7" fill="#1f9d6b"/>
+<line x1="210" y1="420" x2="590" y2="420" stroke="#9fc7ae" stroke-width="3"/>
+<g transform="translate(470,300) rotate(-25)">
+<circle cx="0" cy="0" r="26" fill="none" stroke="#1f9d6b" stroke-width="6"/>
+<path d="M18 18 L70 70" stroke="#173a2c" stroke-width="12" stroke-linecap="round"/>
+</g>
+<text x="210" y="180" font-family="Arial,sans-serif" font-size="22" fill="#738379">Drawing Instruments</text>
+</svg>

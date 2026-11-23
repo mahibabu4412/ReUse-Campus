@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+<rect width="800" height="600" fill="#e9f3ef"/>
+<circle cx="670" cy="120" r="160" fill="#d6ecdd"/>
+<rect x="200" y="170" width="400" height="260" rx="20" fill="#173a2c"/>
+<rect x="224" y="194" width="352" height="212" rx="12" fill="#0f2a20"/>
+<rect x="265" y="250" width="200" height="120" rx="8" fill="#1c4a37" stroke="#3a7d5e" stroke-width="3"/>
+<text x="365" y="315" font-family="Arial,sans-serif" font-size="34" fill="#8ed5b4" text-anchor="middle">UNO</text>
+<g fill="#c9a227">
+<rect x="235" y="220" width="18" height="12"/><rect x="263" y="220" width="18" height="12"/><rect x="291" y="220" width="18" height="12"/>
+<rect x="235" y="380" width="18" height="12"/><rect x="263" y="380" width="18" height="12"/><rect x="291" y="380" width="18" height="12"/>
+</g>
+<circle cx="520" cy="250" r="10" fill="#e0523f"/><circle cx="520" cy="280" r="10" fill="#f0c419"/><circle cx="520" cy="310" r="10" fill="#1f9d6b"/>
+</svg>
