@@ -79,9 +79,11 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
                   {unread > 0 && <span className="absolute right-2 top-2 size-2 rounded-full bg-rose-500 ring-2 ring-background" />}
                 </Link>
               </Button>
-              <Button asChild size="sm" className="hidden sm:inline-flex">
-                <Link href="/listings/new"><Plus className="size-4" /> List an item</Link>
-              </Button>
+              {user.role === "student" && (
+                <Button asChild size="sm" className="hidden sm:inline-flex">
+                  <Link href="/listings/new"><Plus className="size-4" /> List an item</Link>
+                </Button>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2 px-2">
@@ -94,10 +96,16 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
                   <DropdownMenuLabel>Signed in as {user.name}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link href={dashboard}><LayoutDashboard className="mr-2 size-4" /> Dashboard</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/dashboard/listings"><Package className="mr-2 size-4" /> My listings</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/dashboard/requests"><Repeat2 className="mr-2 size-4" /> Requests</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/dashboard/saved"><Heart className="mr-2 size-4" /> Saved items</Link></DropdownMenuItem>
-                  <DropdownMenuItem asChild><Link href="/profile"><Settings className="mr-2 size-4" /> Profile settings</Link></DropdownMenuItem>
+                  {user.role === "student" ? (
+                    <>
+                      <DropdownMenuItem asChild><Link href="/dashboard/listings"><Package className="mr-2 size-4" /> My listings</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/dashboard/requests"><Repeat2 className="mr-2 size-4" /> Requests</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/dashboard/saved"><Heart className="mr-2 size-4" /> Saved items</Link></DropdownMenuItem>
+                      <DropdownMenuItem asChild><Link href="/profile"><Settings className="mr-2 size-4" /> Profile settings</Link></DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem asChild><Link href="/admin"><LayoutDashboard className="mr-2 size-4" /> Admin panel</Link></DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link href="/logout"><LogOut className="mr-2 size-4" /> Log out</Link></DropdownMenuItem>
                 </DropdownMenuContent>
