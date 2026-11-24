@@ -22,7 +22,7 @@ model categories {
   slug        String            @unique(map: "uq_categories_slug") @db.VarChar(120)
   description String?           @db.VarChar(255)
   icon        String?           @db.VarChar(60)
-  status      categories_status @default(active)
+  status      String @default("active")
   created_at  DateTime          @default(now()) @db.Timestamp(0)
   listings    listings[]
 }
@@ -47,7 +47,7 @@ model exchange_history {
   listing_id                                 Int                           
   requester_id                               Int                           
   owner_id                                   Int                           
-  exchange_type                              exchange_history_exchange_type
+  exchange_type                              String
   note                                       String?                        @db.Text
   completed_at                               DateTime                       @default(now()) @db.Timestamp(0)
   listings                                   listings                       @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
@@ -78,7 +78,7 @@ model item_requests {
   owner_id                                Int                 
   message                                 String?              @db.Text
   expected_return_date                    DateTime?            @db.Date
-  status                                  item_requests_status @default(pending)
+  status                                  String @default("pending")
   return_confirmed                        Boolean              @default(false)
   created_at                              DateTime             @default(now()) @db.Timestamp(0)
   updated_at                              DateTime             @default(now()) @db.Timestamp(0)
@@ -109,13 +109,13 @@ model listings {
   category_id      Int                    
   title            String                  @db.VarChar(180)
   description      String                  @db.Text
-  item_condition   listings_item_condition @default(good)
-  exchange_type    listings_exchange_type
+  item_condition   String @default("good")
+  exchange_type    String
   price            Decimal?                @default(0.00) @db.Decimal(10, 2)
-  availability     listings_availability   @default(available)
+  availability     String   @default("available")
   pickup_location  String?                 @db.VarChar(190)
   views            Int                     @default(0)
-  status           listings_status         @default(active)
+  status           String         @default("active")
   created_at       DateTime                @default(now()) @db.Timestamp(0)
   updated_at       DateTime                @default(now()) @db.Timestamp(0)
   exchange_history exchange_history[]
@@ -139,7 +139,7 @@ model notifications {
   user_id    Int               
   title      String             @db.VarChar(150)
   message    String             @db.VarChar(500)
-  type       notifications_type @default(system)
+  type       String @default("system")
   link       String?            @db.VarChar(255)
   is_read    Boolean            @default(false)
   created_at DateTime           @default(now()) @db.Timestamp(0)
@@ -154,9 +154,9 @@ model reports {
   reporter_id                           Int           
   listing_id                            Int?          
   reported_user_id                      Int?          
-  reason                                reports_reason
+  reason                                String
   details                               String?        @db.Text
-  status                                reports_status @default(pending)
+  status                                String @default("pending")
   admin_note                            String?        @db.Text
   created_at                            DateTime       @default(now()) @db.Timestamp(0)
   listings                              listings?      @relation(fields: [listing_id], references: [id], onUpdate: Restrict)
@@ -201,7 +201,7 @@ model users {
   bio                                                   String?            @db.Text
   email_verified                                        Boolean            @default(false)
   verification_token                                    String?            @db.VarChar(100)
-  status                                                users_status       @default(active)
+  status                                                String       @default("active")
   created_at                                            DateTime           @default(now()) @db.Timestamp(0)
   updated_at                                            DateTime           @default(now()) @db.Timestamp(0)
   contact_messages                                      contact_messages[]
@@ -220,76 +220,13 @@ model users {
   @@index([status], map: "idx_users_status")
 }
 
-enum exchange_history_exchange_type {
-  donation
-  borrow
-  exchange
-  sale
-}
 
-enum notifications_type {
-  request
-  system
-  exchange
-  report
-  account
-}
 
-enum reports_reason {
-  inappropriate
-  spam
-  misleading
-  other
-}
 
-enum categories_status {
-  active
-  inactive
-}
 
-enum listings_item_condition {
-  new
-  like_new
-  good
-  fair
-}
 
-enum item_requests_status {
-  pending
-  accepted
-  rejected
-  completed
-  cancelled
-}
 
-enum listings_exchange_type {
-  donation
-  borrow
-  exchange
-  sale
-}
 
-enum reports_status {
-  pending
-  reviewed
-  resolved
-  dismissed
-}
 
-enum listings_availability {
-  available
-  reserved
-  completed
-}
 
-enum listings_status {
-  active
-  pending
-  removed
-  sold
-}
 
-enum users_status {
-  active
-  suspended
-}
