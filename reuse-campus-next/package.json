@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "node scripts/prisma-generate.mjs",
+    "db:supabase": "node scripts/apply-supabase-schema.mjs",
+    "db:pg-schema": "node scripts/make-postgres-schema.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -43,6 +46,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "pg": "^8.23.1",
     "tailwindcss": "4.3.3",
     "typescript": "^5"
   },

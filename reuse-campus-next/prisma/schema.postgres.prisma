@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model admins {
+  id         Int      @id @default(autoincrement())
+  full_name  String   @db.VarChar(120)
+  username   String   @unique(map: "uq_admins_username") @db.VarChar(80)
+  email      String   @unique(map: "uq_admins_email") @db.VarChar(190)
+  password   String   @db.VarChar(255)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+}
+
+model categories {
+  id          Int               @id @default(autoincrement())
+  name        String            @db.VarChar(100)
+  slug        String            @unique(map: "uq_categories_slug") @db.VarChar(120)
+  description String?           @db.VarChar(255)
+  icon        String?           @db.VarChar(60)
+  status      categories_status @default(active)
+  created_at  DateTime          @default(now()) @db.Timestamp(0)
+  listings    listings[]
+}
+
+model contact_messages {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(120)
+  email      String   @db.VarChar(190)
+  subject    String   @db.VarChar(190)
+  message    String   @db.Text
+  user_id    Int?    
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  users      users?   @relation(fields: [user_id], references: [id], onUpdate: Restrict)
+
+  @@index([user_id], map: "fk_contact_user")
+  @@index([is_read], map: "idx_contact_read")
+}
+
+model exchange_history {
+  id                                         Int                            @id @default(autoincrement())
+  listing_id                                 Int                           
+  requester_id                               Int                           
+  owner_id                                   Int                           
+  exchange_type                              exchange_history_exchange_type
+  note                                       String?                        @db.Text
+  completed_at                               DateTime                       @default(now()) @db.Timestamp(0)
+  listings                                   listings                       @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_exchange_history_owner_idTousers     users                          @relation("exchange_history_owner_idTousers", fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_exchange_history_requester_idTousers users                          @relation("exchange_history_requester_idTousers", fields: [requester_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([listing_id], map: "fk_hist_listing")
+  @@index([owner_id], map: "idx_hist_owner")
+  @@index([requester_id], map: "idx_hist_requester")
+}
+
+model favorites {
+  id         Int      @id @default(autoincrement())
+  user_id    Int     
+  listing_id Int     
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  listings   listings @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([user_id, listing_id], map: "uq_fav")
+  @@index([listing_id], map: "idx_fav_listing")
+}
+
+model item_requests {
+  id                                      Int                  @id @default(autoincrement())
+  listing_id                              Int                 
+  requester_id                            Int                 
+  owner_id                                Int                 
+  message                                 String?              @db.Text
+  expected_return_date                    DateTime?            @db.Date
+  status                                  item_requests_status @default(pending)
+  return_confirmed                        Boolean              @default(false)
+  created_at                              DateTime             @default(now()) @db.Timestamp(0)
+  updated_at                              DateTime             @default(now()) @db.Timestamp(0)
+  listings                                listings             @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_item_requests_owner_idTousers     users                @relation("item_requests_owner_idTousers", fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_item_requests_requester_idTousers users                @relation("item_requests_requester_idTousers", fields: [requester_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([listing_id], map: "idx_req_listing")
+  @@index([owner_id], map: "idx_req_owner")
+  @@index([requester_id], map: "idx_req_requester")
+  @@index([status], map: "idx_req_status")
+}
+
+model listing_images {
+  id         Int      @id @default(autoincrement())
+  listing_id Int     
+  filename   String   @db.VarChar(255)
+  is_primary Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  listings   listings @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([listing_id], map: "idx_images_listing")
+}
+
+model listings {
+  id               Int                     @id @default(autoincrement())
+  user_id          Int                    
+  category_id      Int                    
+  title            String                  @db.VarChar(180)
+  description      String                  @db.Text
+  item_condition   listings_item_condition @default(good)
+  exchange_type    listings_exchange_type
+  price            Decimal?                @default(0.00) @db.Decimal(10, 2)
+  availability     listings_availability   @default(available)
+  pickup_location  String?                 @db.VarChar(190)
+  views            Int                     @default(0)
+  status           listings_status         @default(active)
+  created_at       DateTime                @default(now()) @db.Timestamp(0)
+  updated_at       DateTime                @default(now()) @db.Timestamp(0)
+  exchange_history exchange_history[]
+  favorites        favorites[]
+  item_requests    item_requests[]
+  listing_images   listing_images[]
+  categories       categories              @relation(fields: [category_id], references: [id], onUpdate: Restrict)
+  users            users                   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  reports          reports[]
+  reviews          reviews[]
+
+  @@index([category_id], map: "idx_listings_category")
+  @@index([created_at], map: "idx_listings_created")
+  @@index([status], map: "idx_listings_status")
+  @@index([exchange_type], map: "idx_listings_type")
+  @@index([user_id], map: "idx_listings_user")
+}
+
+model notifications {
+  id         Int                @id @default(autoincrement())
+  user_id    Int               
+  title      String             @db.VarChar(150)
+  message    String             @db.VarChar(500)
+  type       notifications_type @default(system)
+  link       String?            @db.VarChar(255)
+  is_read    Boolean            @default(false)
+  created_at DateTime           @default(now()) @db.Timestamp(0)
+  users      users              @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@index([is_read], map: "idx_notif_read")
+  @@index([user_id], map: "idx_notif_user")
+}
+
+model reports {
+  id                                    Int            @id @default(autoincrement())
+  reporter_id                           Int           
+  listing_id                            Int?          
+  reported_user_id                      Int?          
+  reason                                reports_reason
+  details                               String?        @db.Text
+  status                                reports_status @default(pending)
+  admin_note                            String?        @db.Text
+  created_at                            DateTime       @default(now()) @db.Timestamp(0)
+  listings                              listings?      @relation(fields: [listing_id], references: [id], onUpdate: Restrict)
+  users_reports_reporter_idTousers      users          @relation("reports_reporter_idTousers", fields: [reporter_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_reports_reported_user_idTousers users?         @relation("reports_reported_user_idTousers", fields: [reported_user_id], references: [id], onUpdate: Restrict)
+
+  @@index([reporter_id], map: "fk_reports_reporter")
+  @@index([reported_user_id], map: "fk_reports_user")
+  @@index([listing_id], map: "idx_reports_listing")
+  @@index([status], map: "idx_reports_status")
+}
+
+model reviews {
+  id                                    Int      @id @default(autoincrement())
+  listing_id                            Int     
+  reviewer_id                           Int     
+  reviewed_user_id                      Int     
+  rating                                Int     
+  comment                               String?  @db.Text
+  created_at                            DateTime @default(now()) @db.Timestamp(0)
+  listings                              listings @relation(fields: [listing_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_reviews_reviewed_user_idTousers users    @relation("reviews_reviewed_user_idTousers", fields: [reviewed_user_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  users_reviews_reviewer_idTousers      users    @relation("reviews_reviewer_idTousers", fields: [reviewer_id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([listing_id, reviewer_id], map: "uq_review")
+  @@index([reviewed_user_id], map: "fk_rev_reviewed")
+  @@index([reviewer_id], map: "fk_rev_reviewer")
+}
+
+model users {
+  id                                                    Int                @id @default(autoincrement())
+  full_name                                             String             @db.VarChar(120)
+  student_id                                            String             @unique(map: "uq_users_student_id") @db.VarChar(50)
+  email                                                 String             @unique(map: "uq_users_email") @db.VarChar(190)
+  password                                              String             @db.VarChar(255)
+  college                                               String?            @db.VarChar(190)
+  department                                            String?            @db.VarChar(190)
+  semester                                              String?            @db.VarChar(30)
+  phone                                                 String?            @db.VarChar(30)
+  profile_picture                                       String?            @db.VarChar(255)
+  contact_preferences                                   String?            @default("email") @db.VarChar(255)
+  bio                                                   String?            @db.Text
+  email_verified                                        Boolean            @default(false)
+  verification_token                                    String?            @db.VarChar(100)
+  status                                                users_status       @default(active)
+  created_at                                            DateTime           @default(now()) @db.Timestamp(0)
+  updated_at                                            DateTime           @default(now()) @db.Timestamp(0)
+  contact_messages                                      contact_messages[]
+  exchange_history_exchange_history_owner_idTousers     exchange_history[] @relation("exchange_history_owner_idTousers")
+  exchange_history_exchange_history_requester_idTousers exchange_history[] @relation("exchange_history_requester_idTousers")
+  favorites                                             favorites[]
+  item_requests_item_requests_owner_idTousers           item_requests[]    @relation("item_requests_owner_idTousers")
+  item_requests_item_requests_requester_idTousers       item_requests[]    @relation("item_requests_requester_idTousers")
+  listings                                              listings[]
+  notifications                                         notifications[]
+  reports_reports_reporter_idTousers                    reports[]          @relation("reports_reporter_idTousers")
+  reports_reports_reported_user_idTousers               reports[]          @relation("reports_reported_user_idTousers")
+  reviews_reviews_reviewed_user_idTousers               reviews[]          @relation("reviews_reviewed_user_idTousers")
+  reviews_reviews_reviewer_idTousers                    reviews[]          @relation("reviews_reviewer_idTousers")
+
+  @@index([status], map: "idx_users_status")
+}
+
+enum exchange_history_exchange_type {
+  donation
+  borrow
+  exchange
+  sale
+}
+
+enum notifications_type {
+  request
+  system
+  exchange
+  report
+  account
+}
+
+enum reports_reason {
+  inappropriate
+  spam
+  misleading
+  other
+}
+
+enum categories_status {
+  active
+  inactive
+}
+
+enum listings_item_condition {
+  new
+  like_new
+  good
+  fair
+}
+
+enum item_requests_status {
+  pending
+  accepted
+  rejected
+  completed
+  cancelled
+}
+
+enum listings_exchange_type {
+  donation
+  borrow
+  exchange
+  sale
+}
+
+enum reports_status {
+  pending
+  reviewed
+  resolved
+  dismissed
+}
+
+enum listings_availability {
+  available
+  reserved
+  completed
+}
+
+enum listings_status {
+  active
+  pending
+  removed
+  sold
+}
+
+enum users_status {
+  active
+  suspended
+}
