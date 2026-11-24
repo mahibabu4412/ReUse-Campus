@@ -35,7 +35,7 @@ export function LoginForm({ fixedRole }: { fixedRole?: "admin" | "student" }) {
           </select>
         </div>
       )}
-      <div><Label htmlFor="email">{fixedRole === "admin" ? "Username or email" : "Email address / username"}</Label><Input id="email" name="email" type="text" required className="mt-1.5" placeholder={fixedRole === "admin" ? "admin" : "you@student.edu"} /></div>
+      <div><Label htmlFor="email">{fixedRole === "admin" ? "Username or email" : "Email or student ID"}</Label><Input id="email" name="email" type="text" required className="mt-1.5" placeholder={fixedRole === "admin" ? "admin" : "you@student.edu or STU-2021-0142"} /></div>
       <div><Label htmlFor="password">Password</Label><Input id="password" name="password" type="password" required className="mt-1.5" /></div>
       <div className="flex justify-end text-sm"><Link href="/forgot-password" className="font-medium text-primary hover:underline">Forgot password?</Link></div>
       <Button type="submit" disabled={pending} className="w-full">{pending ? "Signing in..." : "Log in"}</Button>

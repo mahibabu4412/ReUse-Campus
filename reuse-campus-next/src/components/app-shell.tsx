@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bell, BellRing, LayoutDashboard, Package, Repeat2, Handshake, Heart, History,
+  Bell, BellRing, Home, LayoutDashboard, Package, Repeat2, Handshake, Heart, History,
   Search, Plus, Settings, LogOut, Users, Flag, Layers, Mail, BarChart3,
   ExternalLink, Menu, ShieldCheck,
 } from "lucide-react";
@@ -20,6 +20,7 @@ type Section = { label: string; items: LinkItem[] };
 
 const studentSections: Section[] = [
   { label: "Workspace", items: [
+    { href: "/", label: "Home", icon: Home },
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
     { href: "/dashboard/listings", label: "My listings", icon: Package },
     { href: "/dashboard/requests", label: "My requests", icon: Repeat2 },
@@ -39,6 +40,7 @@ const studentSections: Section[] = [
 
 const adminSections: Section[] = [
   { label: "Management", items: [
+    { href: "/", label: "Home", icon: Home },
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Students", icon: Users },
     { href: "/admin/listings", label: "Listings", icon: Package },
@@ -122,6 +124,9 @@ export function AppShell({
               </div>
             </SheetContent>
           </Sheet>
+          <Button asChild variant="ghost" size="icon" className="hidden sm:inline-flex" aria-label="Home">
+            <Link href="/"><Home className="size-4" /></Link>
+          </Button>
           <h1 className="font-semibold">{title}</h1>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />

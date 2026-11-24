@@ -34,7 +34,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           };
         }
 
-        const user = await prisma.users.findUnique({ where: { email } });
+        // Accept either email or student ID in the same field.
+        const user = email.includes("@")
+          ? await prisma.users.findUnique({ where: { email } })
+          : await prisma.users.findFirst({ where: { student_id: email } });
         if (!user || user.status !== "active") return null;
         if (!(await bcrypt.compare(password, user.password))) return null;
         return {
