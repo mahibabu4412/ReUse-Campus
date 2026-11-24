@@ -24,21 +24,5 @@ export const authConfig = {
       }
       return session;
     },
-    async authorized({ auth, request: { nextUrl } }) {
-      const role = auth?.user?.role;
-      const path = nextUrl.pathname;
-
-      const studentArea = ["/dashboard", "/profile", "/listings", "/requests"];
-      const isStudentArea = studentArea.some(
-        (p) => path === p || path.startsWith(`${p}/`)
-      );
-      const isAdminArea = path === "/admin" || path.startsWith("/admin/");
-      const isAdminLogin = path === "/admin/login";
-
-      if (isAdminLogin) return true;
-      if (isAdminArea) return role === "admin";
-      if (isStudentArea) return role === "student" || role === "admin";
-      return true;
-    },
   },
 } satisfies NextAuthConfig;
