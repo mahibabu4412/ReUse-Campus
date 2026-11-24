@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { redirect } from "next/navigation";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { authConfig } from "@/auth.config";
@@ -64,12 +65,12 @@ export async function currentStudent() {
 
 export async function requireStudent() {
   const student = await currentStudent();
-  if (!student) throw new Error("UNAUTHORIZED");
+  if (!student) redirect("/login");
   return student;
 }
 
 export async function requireAdminSession() {
   const session = await auth();
-  if (!session?.user || session.user.role !== "admin") throw new Error("UNAUTHORIZED");
+  if (!session?.user || session.user.role !== "admin") redirect("/admin/login");
   return session.user;
 }
