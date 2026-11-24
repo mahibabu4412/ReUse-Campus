@@ -2,6 +2,14 @@
 
 Full migration of the original PHP + MySQL application to a modern **Next.js 16 (App Router) + TypeScript + Tailwind CSS + shadcn/ui + Prisma + Auth.js + Zod** stack. The existing MySQL database (`reuse_campus`) and all user data are preserved.
 
+## 🚀 Live deployment
+
+**Production:** https://reuse-campus-next.vercel.app
+
+Deployed with the **Vercel CLI** (`vercel deploy --prod --yes`). The database is a free **Neon Postgres** provisioned through the Vercel Marketplace integration (`vercel integration add neon`). The prepared SQL from `../reuse-campus/supabase/` was applied via `npm run db:supabase`, and Prisma switches to Postgres automatically with `DB_DRIVER=pgsql`.
+
+Vercel env vars: `DATABASE_URL` (Neon), `DB_DRIVER=pgsql`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`. Locally, leaving `DB_DRIVER` unset keeps the original MySQL/XAMPP path.
+
 ---
 
 ## What was preserved
