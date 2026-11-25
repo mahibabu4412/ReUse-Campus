@@ -29,7 +29,9 @@ export async function loginAction(_prev: ActionState, formData: FormData): Promi
     if (err instanceof AuthError) return { error: "Invalid credentials or suspended account." };
     throw err;
   }
-  return { success: "Welcome back!", redirectTo: parsed.data.role === "admin" ? "/admin" : "/dashboard" };
+  // Server-side redirect completes the action response so the session cookie
+  // is committed before the browser follows the redirect.
+  redirect(parsed.data.role === "admin" ? "/admin" : "/dashboard");
 }
 
 export async function registerAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -66,7 +68,7 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
   await signIn("credentials", {
     email: data.email, password: data.password, role: "student", redirect: false,
   });
-  return { success: "Account created. Welcome to ReUse Campus!", redirectTo: "/dashboard?welcome=1" };
+  redirect("/dashboard?welcome=1");
 }
 
 export async function forgotPasswordAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -90,7 +92,7 @@ export async function resetPasswordAction(_prev: ActionState, formData: FormData
     where: { id: user.id },
     data: { password: await bcrypt.hash(parsed.data.password, 12), verification_token: null },
   });
-  return { success: "Password updated. You can now log in.", redirectTo: "/login" };
+  redirect("/login?reset=1");
 }
 
 export async function verifyEmailAction(token: string) {

@@ -2,7 +2,6 @@
 
 import { useActionState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,15 +11,10 @@ import { loginAction, registerAction, forgotPasswordAction, resetPasswordAction,
 const initial: ActionState = {};
 
 function useAuthResult(state: ActionState) {
-  const router = useRouter();
   useEffect(() => {
     if (state.error) toast.error(state.error);
     if (state.success) toast.success(state.success);
-    if (state.redirectTo) {
-      router.push(state.redirectTo);
-      router.refresh();
-    }
-  }, [state, router]);
+  }, [state]);
 }
 
 export function LoginForm({ fixedRole }: { fixedRole?: "admin" | "student" }) {
