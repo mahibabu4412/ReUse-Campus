@@ -7,7 +7,7 @@ import { Bell, ChevronDown, LayoutDashboard, LogOut, Menu, Package, Plus, Settin
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -97,7 +97,9 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Signed in as {user.name}</DropdownMenuLabel>
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Signed in as {user.name}</DropdownMenuLabel>
+                  </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild><Link href={dashboard}><LayoutDashboard className="mr-2 size-4" /> Dashboard</Link></DropdownMenuItem>
                   {user.role === "student" ? (
