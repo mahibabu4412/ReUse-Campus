@@ -93,7 +93,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         data: {
           email_verified: true,
           // Keep an uploaded avatar; only fill an empty profile picture.
-          ...(student.profile_picture || !user.image
+          // profile_picture is VARCHAR(255), so ignore oversized Google URLs.
+          ...(student.profile_picture || !user.image || user.image.length > 255
             ? {}
             : { profile_picture: user.image }),
         },
