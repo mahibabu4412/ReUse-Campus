@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, ChevronDown, LayoutDashboard, LogOut, Menu, Package, Plus, Settings, Heart, Repeat2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,10 @@ const links = [
 export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unread?: number }) {
   const pathname = usePathname();
   const dashboard = user?.role === "admin" ? "/admin" : "/dashboard";
+  const logoutForm = useRef<HTMLFormElement>(null);
 
   return (
+    <>
     <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container mx-auto flex h-[72px] max-w-7xl items-center gap-4 px-4 sm:px-6">
         <Sheet>
@@ -108,11 +111,9 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
                     <DropdownMenuItem asChild><Link href="/admin"><LayoutDashboard className="mr-2 size-4" /> Admin panel</Link></DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
-                  <form action={logoutAction}>
-                    <DropdownMenuItem asChild>
-                      <button type="submit" className="w-full cursor-pointer"><LogOut className="mr-2 size-4" /> Log out</button>
-                    </DropdownMenuItem>
-                  </form>
+                  <DropdownMenuItem onClick={() => logoutForm.current?.requestSubmit()}>
+                    <LogOut className="mr-2 size-4" /> Log out
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
@@ -125,5 +126,8 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
         </div>
       </div>
     </header>
+    {/* Kept outside the menu: a form wrapper inside the Base UI popup breaks it. */}
+    <form ref={logoutForm} action={logoutAction} className="hidden" />
+    </>
   );
 }
