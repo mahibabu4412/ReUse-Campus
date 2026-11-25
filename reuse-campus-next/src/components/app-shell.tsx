@@ -67,8 +67,11 @@ function SidebarContent({ sections, pathname }: { sections: Section[]; pathname:
             <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-emerald-200/60">{section.label}</p>
             <div className="space-y-1">
               {section.items.map((item) => {
-                const active = item.href === (sections === adminSections ? "/admin" : "/dashboard")
-                  ? pathname === item.href : pathname.startsWith(item.href);
+                const active = item.href === "/"
+                  ? pathname === "/"
+                  : item.href === (sections === adminSections ? "/admin" : "/dashboard")
+                    ? pathname === item.href
+                    : pathname.startsWith(item.href);
                 return (
                   <Link key={item.href} href={item.href} className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-colors",
