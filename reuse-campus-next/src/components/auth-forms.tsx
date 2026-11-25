@@ -37,17 +37,23 @@ export function LoginForm({ fixedRole }: { fixedRole?: "admin" | "student" }) {
   );
 }
 
-export function RegisterForm() {
+export function RegisterForm({
+  defaultEmail = "",
+  defaultName = "",
+}: {
+  defaultEmail?: string;
+  defaultName?: string;
+}) {
   const [state, action, pending] = useActionState(registerAction, initial);
   useAuthResult(state);
   return (
     <form action={action} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div><Label htmlFor="full_name">Full name</Label><Input id="full_name" name="full_name" required minLength={3} className="mt-1.5" /></div>
+        <div><Label htmlFor="full_name">Full name</Label><Input id="full_name" name="full_name" required minLength={3} defaultValue={defaultName} className="mt-1.5" /></div>
         <div><Label htmlFor="student_id">Student ID</Label><Input id="student_id" name="student_id" required className="mt-1.5" placeholder="STU-2021-0142" /></div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <div><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" required className="mt-1.5" /></div>
+        <div><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" required defaultValue={defaultEmail} className="mt-1.5" /></div>
         <div><Label htmlFor="phone">Phone (optional)</Label><Input id="phone" name="phone" className="mt-1.5" /></div>
       </div>
       <div><Label htmlFor="college">College / Institute</Label><Input id="college" name="college" required className="mt-1.5" /></div>

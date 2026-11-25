@@ -1,14 +1,27 @@
 import NextAuth from "next-auth";
 import { redirect } from "next/navigation";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validation";
 
+const googleEnabled = Boolean(
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET,
+);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
+    ...(googleEnabled
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -20,10 +33,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
         const { email, password, role } = parsed.data;
+        // Emails are stored lowercase; usernames/student IDs keep their case.
+        const identifier = email.includes("@") ? email.trim().toLowerCase() : email;
 
         if (role === "admin") {
           const admin = await prisma.admins.findFirst({
-            where: { OR: [{ email }, { username: email }] },
+            where: { OR: [{ email: identifier }, { username: email }] },
           });
           if (!admin || !(await bcrypt.compare(password, admin.password))) return null;
           return {
@@ -36,7 +51,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         // Accept either email or student ID in the same field.
         const user = email.includes("@")
-          ? await prisma.users.findUnique({ where: { email } })
+          ? await prisma.users.findUnique({ where: { email: identifier } })
           : await prisma.users.findFirst({ where: { student_id: email } });
         if (!user || user.status !== "active") return null;
         if (!(await bcrypt.compare(password, user.password))) return null;
@@ -49,6 +64,64 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account }) {
+      // Credentials logins are already verified in authorize().
+      if (account?.provider !== "google") return true;
+
+      const email = user.email?.trim().toLowerCase();
+      if (!email) return "/login?error=google";
+
+      const student = await prisma.users.findFirst({
+        where: { email },
+        select: { id: true, status: true, profile_picture: true },
+      });
+
+      if (!student) {
+        // Google proves the email address, but this app needs a student ID,
+        // college and department. Send them to registration with the email
+        // and name prefilled instead of creating an incomplete account.
+        const params = new URLSearchParams({ email, google: "1" });
+        if (user.name) params.set("name", user.name.slice(0, 120));
+        return `/register?${params.toString()}`;
+      }
+      if (student.status !== "active") return "/login?error=suspended";
+
+      await prisma.users.update({
+        where: { id: student.id },
+        data: {
+          email_verified: true,
+          // Keep an uploaded avatar; only fill an empty profile picture.
+          ...(student.profile_picture || !user.image
+            ? {}
+            : { profile_picture: user.image }),
+        },
+      });
+
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        const u = user as { role?: "student" | "admin" };
+        token.role = u.role ?? "student";
+      }
+      // OAuth providers supply their own numeric/opaque user ID. Swap it for
+      // the local student ID so currentStudent() and role guards keep working.
+      if (account?.provider === "google" && token.email) {
+        const student = await prisma.users.findFirst({
+          where: { email: token.email.toLowerCase() },
+          select: { id: true, full_name: true },
+        });
+        if (student) {
+          token.sub = String(student.id);
+          token.name = student.full_name;
+          token.role = "student";
+        }
+      }
+      return token;
+    },
+  },
 });
 
 /** Current student record (null for admins/guests). */

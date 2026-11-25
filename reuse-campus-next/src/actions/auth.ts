@@ -34,6 +34,11 @@ export async function loginAction(_prev: ActionState, formData: FormData): Promi
   redirect(parsed.data.role === "admin" ? "/admin" : "/dashboard");
 }
 
+/** Start the Google OAuth flow. Must stay a POST action, never a prefetchable link. */
+export async function googleSignInAction() {
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
 /**
  * Logout must be a POST server action. A GET link would be prefetched by the
  * Next.js router (the desktop sidebar is always visible), which used to clear
@@ -48,9 +53,10 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
   const parsed = registerSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: flatten(parsed.error) };
   const data = parsed.data;
+  const email = data.email.trim().toLowerCase();
 
   const existing = await prisma.users.findFirst({
-    where: { OR: [{ email: data.email }, { student_id: data.student_id }] },
+    where: { OR: [{ email }, { student_id: data.student_id }] },
   });
   if (existing) return { error: "An account with that email or student ID already exists." };
 
@@ -59,7 +65,7 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
     data: {
       full_name: data.full_name,
       student_id: data.student_id,
-      email: data.email,
+      email,
       password: await bcrypt.hash(data.password, 12),
       college: data.college,
       department: data.department,
@@ -76,7 +82,7 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
   console.info(`[ReUse Campus] Verify ${data.email}: /auth/verify?token=${token}`);
 
   await signIn("credentials", {
-    email: data.email, password: data.password, role: "student", redirect: false,
+    email, password: data.password, role: "student", redirect: false,
   });
   redirect("/dashboard?welcome=1");
 }
@@ -84,7 +90,9 @@ export async function registerAction(_prev: ActionState, formData: FormData): Pr
 export async function forgotPasswordAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = forgotSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: flatten(parsed.error) };
-  const user = await prisma.users.findUnique({ where: { email: parsed.data.email } });
+  const user = await prisma.users.findUnique({
+    where: { email: parsed.data.email.trim().toLowerCase() },
+  });
   if (user) {
     const token = randomBytes(24).toString("hex");
     await prisma.users.update({ where: { id: user.id }, data: { verification_token: token } });

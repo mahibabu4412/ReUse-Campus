@@ -8,7 +8,7 @@ Full migration of the original PHP + MySQL application to a modern **Next.js 16 
 
 Deployed with the **Vercel CLI** (`vercel deploy --prod --yes`). The database is a free **Neon Postgres** provisioned through the Vercel Marketplace integration (`vercel integration add neon`). The prepared SQL from `../reuse-campus/supabase/` was applied via `npm run db:supabase`, and Prisma switches to Postgres automatically with `DB_DRIVER=pgsql`.
 
-Vercel env vars: `DATABASE_URL` (Neon), `DB_DRIVER=pgsql`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`. Locally, leaving `DB_DRIVER` unset keeps the original MySQL/XAMPP path.
+Vercel env vars: `DATABASE_URL` (Neon), `DB_DRIVER=pgsql`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. Locally, leaving `DB_DRIVER` unset keeps the original MySQL/XAMPP path.
 
 ---
 
@@ -27,7 +27,7 @@ Vercel env vars: `DATABASE_URL` (Neon), `DB_DRIVER=pgsql`, `AUTH_SECRET`, `AUTH_
 | Styling | Tailwind CSS 4 + shadcn/ui (base-ui primitives) |
 | Icons | lucide-react |
 | Database | Existing MySQL via Prisma ORM |
-| Auth | Auth.js v5 (JWT sessions, Credentials provider, bcryptjs) |
+| Auth | Auth.js v5 (JWT sessions, Credentials + Google OAuth, bcryptjs) |
 | Validation | Zod |
 | Mutations | Server Actions (CSRF handled by Next.js origin checks) |
 | Feedback | sonner toasts, route loading skeletons |
@@ -69,8 +69,10 @@ public/uploads/         validated image uploads
    ```env
    DATABASE_URL="mysql://root@localhost:3306/reuse_campus"
    AUTH_SECRET="generate-with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))""
+   GOOGLE_CLIENT_ID=""
+   GOOGLE_CLIENT_SECRET=""
    ```
-   `AUTH_TRUST_HOST=true` is already set in the example.
+   `AUTH_TRUST_HOST=true` is already set in the example. Leave the Google values empty to hide the Google buttons and use email/password only.
 
 4. Generate the Prisma client (schema already matches the DB):
    ```bash
@@ -90,6 +92,15 @@ public/uploads/         validated image uploads
 | Student | `ayesha@student.edu` (or any demo student email) | `password` |
 | Admin | `admin` at `/admin/login` | `password` |
 
+## Google sign-in (optional)
+
+The login and registration pages show a Google button when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set.
+
+- Authorized JavaScript origin: `https://reuse-campus-next.vercel.app` (plus `http://localhost:3000` for local dev)
+- Authorized redirect URI: `https://reuse-campus-next.vercel.app/api/auth/callback/google` (plus `http://localhost:3000/api/auth/callback/google`)
+
+Google can only sign in an email that already belongs to a student account. A new Google email is sent to `/register` with the email and name prefilled, because a student ID, college and department are required. A successful Google sign-in marks the email verified and keeps any uploaded avatar.
+
 ## Security notes
 
 - Every Server Action re-authenticates and re-checks authorization/ownership.
@@ -97,7 +108,7 @@ public/uploads/         validated image uploads
 - File uploads are validated by **magic bytes** (JPEG/PNG/GIF/WEBP, max 5 MB) and stored with random UUID names under `public/uploads/`.
 - Passwords remain bcrypt hashes — existing hashes verify unchanged with `bcryptjs`.
 - Student ID, email, phone and profile details are never rendered on public pages.
-- Role checks run in `src/proxy.ts` and again in every protected layout/action.
+- Role checks run in every protected layout and action; OAuth sessions are mapped back to the local student row by verified email.
 
 ## Verification performed
 
