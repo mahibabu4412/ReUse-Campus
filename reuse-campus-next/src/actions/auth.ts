@@ -5,7 +5,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
-import { signIn } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { loginSchema, registerSchema, forgotSchema, resetSchema } from "@/lib/validation";
 
@@ -32,6 +32,16 @@ export async function loginAction(_prev: ActionState, formData: FormData): Promi
   // Server-side redirect completes the action response so the session cookie
   // is committed before the browser follows the redirect.
   redirect(parsed.data.role === "admin" ? "/admin" : "/dashboard");
+}
+
+/**
+ * Logout must be a POST server action. A GET link would be prefetched by the
+ * Next.js router (the desktop sidebar is always visible), which used to clear
+ * the session cookie in the background and bounce the next click to /login.
+ */
+export async function logoutAction() {
+  await signOut({ redirect: false });
+  redirect("/");
 }
 
 export async function registerAction(_prev: ActionState, formData: FormData): Promise<ActionState> {

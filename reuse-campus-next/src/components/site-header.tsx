@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { logoutAction } from "@/actions/auth";
 import { initials, imageUrl } from "@/lib/format";
 
 export type HeaderUser = {
@@ -74,7 +75,7 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
           {user ? (
             <>
               <Button asChild variant="ghost" size="icon" className="relative" aria-label="Notifications">
-                <Link href="/dashboard/notifications">
+                <Link href={user.role === "admin" ? "/admin/reports" : "/dashboard/notifications"}>
                   <Bell className="size-4" />
                   {unread > 0 && <span className="absolute right-2 top-2 size-2 rounded-full bg-rose-500 ring-2 ring-background" />}
                 </Link>
@@ -107,7 +108,11 @@ export function SiteHeader({ user, unread = 0 }: { user: HeaderUser | null; unre
                     <DropdownMenuItem asChild><Link href="/admin"><LayoutDashboard className="mr-2 size-4" /> Admin panel</Link></DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild><Link href="/logout"><LogOut className="mr-2 size-4" /> Log out</Link></DropdownMenuItem>
+                  <form action={logoutAction}>
+                    <DropdownMenuItem asChild>
+                      <button type="submit" className="w-full cursor-pointer"><LogOut className="mr-2 size-4" /> Log out</button>
+                    </DropdownMenuItem>
+                  </form>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>

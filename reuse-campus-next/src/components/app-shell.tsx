@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { logoutAction } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
 
@@ -54,12 +55,12 @@ const adminSections: Section[] = [
   ]},
 ];
 
-function SidebarContent({ sections, pathname }: { sections: Section[]; pathname: string }) {
+function SidebarContent({ sections, pathname, isAdmin }: { sections: Section[]; pathname: string; isAdmin: boolean }) {
   return (
     <>
-      <Link href={sections === adminSections ? "/admin" : "/dashboard"} className="flex h-[72px] items-center gap-2.5 border-b border-white/10 px-5 font-bold text-white">
+      <Link href={isAdmin ? "/admin" : "/dashboard"} className="flex h-[72px] items-center gap-2.5 border-b border-white/10 px-5 font-bold text-white">
         <span className="grid size-8 place-items-center rounded-lg bg-primary"><img src="/images/logo.svg" alt="" className="size-5" /></span>
-        <span className="leading-tight">ReUse Campus<small className="block text-[8px] tracking-[.12em] text-emerald-300">{sections === adminSections ? "ADMIN PANEL" : "STUDENT SPACE"}</small></span>
+        <span className="leading-tight">ReUse Campus<small className="block text-[8px] tracking-[.12em] text-emerald-300">{isAdmin ? "ADMIN PANEL" : "STUDENT SPACE"}</small></span>
       </Link>
       <div className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {sections.map((section) => (
@@ -69,7 +70,7 @@ function SidebarContent({ sections, pathname }: { sections: Section[]; pathname:
               {section.items.map((item) => {
                 const active = item.href === "/"
                   ? pathname === "/"
-                  : item.href === (sections === adminSections ? "/admin" : "/dashboard")
+                  : item.href === (isAdmin ? "/admin" : "/dashboard")
                     ? pathname === item.href
                     : pathname.startsWith(item.href);
                 return (
@@ -91,6 +92,20 @@ function SidebarContent({ sections, pathname }: { sections: Section[]; pathname:
   );
 }
 
+function SidebarFooter({ userName, isAdmin }: { userName: string; isAdmin: boolean }) {
+  return (
+    <div className="m-3 flex items-center gap-2.5 rounded-xl border-t border-white/10 p-2">
+      <Avatar className="size-9"><AvatarFallback className="bg-primary text-white">{initials(userName)}</AvatarFallback></Avatar>
+      <div className="min-w-0"><p className="truncate text-xs font-semibold text-white">{userName}</p><p className="text-[10px] text-emerald-300">{isAdmin ? "Administrator" : "Student member"}</p></div>
+      <form action={logoutAction} className="ml-auto">
+        <button type="submit" className="rounded-lg p-1.5 text-emerald-200 hover:bg-white/10" aria-label="Log out">
+          <LogOut className="size-4" />
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export function AppShell({
   role, userName, title, unread = 0, pendingReports = 0, children,
 }: {
@@ -98,22 +113,22 @@ export function AppShell({
   unread?: number; pendingReports?: number; children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const sections = role === "admin" ? adminSections : studentSections;
-  if (role === "admin") {
-    sections[0].items = sections[0].items.map((i) => i.href === "/admin/reports" ? { ...i, badge: pendingReports } : i);
-  } else {
-    sections[2].items = sections[2].items.map((i) => i.href === "/dashboard/notifications" ? { ...i, badge: unread } : i);
-  }
+  const isAdmin = role === "admin";
+  // Derive the sections for this render instead of mutating the shared constants.
+  const sections = (isAdmin ? adminSections : studentSections).map((section) => ({
+    ...section,
+    items: section.items.map((item) =>
+      item.href === (isAdmin ? "/admin/reports" : "/dashboard/notifications")
+        ? { ...item, badge: isAdmin ? pendingReports : unread }
+        : item
+    ),
+  }));
 
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">
-        <SidebarContent sections={sections} pathname={pathname} />
-        <div className="m-3 flex items-center gap-2.5 rounded-xl border-t border-white/10 p-2">
-          <Avatar className="size-9"><AvatarFallback className="bg-primary text-white">{initials(userName)}</AvatarFallback></Avatar>
-          <div className="min-w-0"><p className="truncate text-xs font-semibold text-white">{userName}</p><p className="text-[10px] text-emerald-300">{role === "admin" ? "Administrator" : "Student member"}</p></div>
-          <Link href="/logout" className="ml-auto rounded-lg p-1.5 text-emerald-200 hover:bg-white/10" aria-label="Log out"><LogOut className="size-4" /></Link>
-        </div>
+        <SidebarContent sections={sections} pathname={pathname} isAdmin={isAdmin} />
+        <SidebarFooter userName={userName} isAdmin={isAdmin} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -123,7 +138,8 @@ export function AppShell({
             <SheetContent side="left" className="w-72 bg-sidebar p-0 text-sidebar-foreground">
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               <div className="flex h-full flex-col">
-                <SidebarContent sections={sections} pathname={pathname} />
+                <SidebarContent sections={sections} pathname={pathname} isAdmin={isAdmin} />
+                <SidebarFooter userName={userName} isAdmin={isAdmin} />
               </div>
             </SheetContent>
           </Sheet>

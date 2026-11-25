@@ -67,6 +67,10 @@ export async function currentStudent() {
 }
 
 export async function requireStudent() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  // A logged-in admin should not be bounced to the student login form.
+  if (session.user.role !== "student") redirect("/admin");
   const student = await currentStudent();
   if (!student) redirect("/login");
   return student;
@@ -74,6 +78,8 @@ export async function requireStudent() {
 
 export async function requireAdminSession() {
   const session = await auth();
-  if (!session?.user || session.user.role !== "admin") redirect("/admin/login");
+  if (!session?.user) redirect("/admin/login");
+  // A logged-in student should not see the admin login form.
+  if (session.user.role !== "admin") redirect("/dashboard");
   return session.user;
 }
