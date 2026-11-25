@@ -15,6 +15,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const counts = await prisma.listings.count({ where: { user_id: student.id } });
   const exchanges = await prisma.exchange_history.count({ where: { OR: [{ requester_id: student.id }, { owner_id: student.id }] } });
+  const needsProfile = student.student_id.startsWith("GOOGLE-") || !student.college || !student.department;
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -27,6 +28,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
 
       {params.verified === "1" && <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">Your email has been verified.</p>}
       {params.verify === "1" && <p className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-sm text-primary">A new verification link was generated. Check the server log in demo mode.</p>}
+      {needsProfile && <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">Complete your student profile below — add your real student ID, college and department.</p>}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         <div className="rounded-2xl border bg-card p-6 shadow-sm">

@@ -21,12 +21,25 @@ export async function updateProfile(_prev: ProfileState, formData: FormData): Pr
     const profilePicture = picture instanceof File && picture.size > 0
       ? await saveUpload(picture, "profiles") : null;
 
+    // Google-created accounts get a temporary "GOOGLE-..." student ID. Let the
+    // owner replace it once; normal accounts keep their ID locked.
+    let studentId: string | undefined;
+    if (student.student_id.startsWith("GOOGLE-") && d.student_id) {
+      const taken = await prisma.users.findFirst({
+        where: { student_id: d.student_id, NOT: { id: student.id } },
+        select: { id: true },
+      });
+      if (taken) return { error: "That student ID is already in use." };
+      studentId = d.student_id;
+    }
+
     await prisma.users.update({
       where: { id: student.id },
       data: {
         full_name: d.full_name, college: d.college, department: d.department,
         semester: d.semester || null, phone: d.phone || null,
         contact_preferences: d.contact_preferences, bio: d.bio || null,
+        ...(studentId ? { student_id: studentId } : {}),
         ...(profilePicture ? { profile_picture: profilePicture } : {}),
       },
     });
@@ -34,6 +47,9 @@ export async function updateProfile(_prev: ProfileState, formData: FormData): Pr
     revalidatePath("/dashboard");
     return { success: "Profile updated successfully." };
   } catch (err) {
+    if ((err as { code?: string } | null)?.code === "P2002") {
+      return { error: "That student ID is already in use." };
+    }
     return { error: err instanceof Error ? err.message : "Could not update profile." };
   }
 }

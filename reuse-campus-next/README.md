@@ -99,7 +99,7 @@ The login and registration pages show a Google button when `GOOGLE_CLIENT_ID` an
 - Authorized JavaScript origin: `https://reuse-campus-next.vercel.app` (plus `http://localhost:3000` for local dev)
 - Authorized redirect URI: `https://reuse-campus-next.vercel.app/api/auth/callback/google` (plus `http://localhost:3000/api/auth/callback/google`)
 
-Google can only sign in an email that already belongs to a student account. A new Google email is sent to `/register` with the email and name prefilled, because a student ID, college and department are required. A successful Google sign-in marks the email verified and keeps any uploaded avatar.
+A new Google email creates a student account automatically (name, verified email and avatar from Google). Until the student completes their profile, the account keeps a temporary `GOOGLE-…` student ID; the dashboard and profile pages prompt them to replace it with their real student ID, college and department. A successful Google sign-in marks the email verified and keeps any uploaded avatar.
 
 ## Security notes
 

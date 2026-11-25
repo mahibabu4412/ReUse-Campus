@@ -43,6 +43,8 @@ export const requestSchema = z.object({
 
 export const profileSchema = z.object({
   full_name: z.string().min(3).max(120),
+  // Only accepted for Google-created accounts that still have a placeholder ID.
+  student_id: z.string().trim().min(3, "Enter your student ID").max(50).regex(/^[A-Za-z0-9\-/]+$/, "Invalid student ID").optional(),
   college: z.string().min(1).max(190),
   department: z.string().min(1).max(190),
   semester: z.string().max(30).optional().default(""),

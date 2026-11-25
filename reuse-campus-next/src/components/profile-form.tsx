@@ -22,6 +22,7 @@ export function ProfileForm({ student }: { student: ProfileValues }) {
     if (state.error) toast.error(state.error);
     if (state.success) toast.success(state.success);
   }, [state]);
+  const pendingStudentId = student.student_id?.startsWith("GOOGLE-") ?? false;
 
   return (
     <form action={action} className="space-y-5">
@@ -31,7 +32,11 @@ export function ProfileForm({ student }: { student: ProfileValues }) {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div><Label htmlFor="full_name">Full name</Label><Input id="full_name" name="full_name" required minLength={3} defaultValue={student.full_name} className="mt-1.5" /></div>
-        <div><Label htmlFor="student_id">Student ID</Label><Input id="student_id" value={student.student_id ?? ""} readOnly disabled className="mt-1.5" /></div>
+        <div>
+          <Label htmlFor="student_id">Student ID</Label>
+          <Input id="student_id" name={pendingStudentId ? "student_id" : undefined} defaultValue={student.student_id ?? ""} readOnly={!pendingStudentId} disabled={!pendingStudentId} className="mt-1.5" />
+          {pendingStudentId && <p className="mt-1 text-xs text-amber-600">Temporary ID from Google sign-in — replace it with your real college student ID.</p>}
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div><Label htmlFor="college">College</Label><Input id="college" name="college" required defaultValue={student.college} className="mt-1.5" /></div>

@@ -49,6 +49,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-6">
+      {(student.student_id.startsWith("GOOGLE-") || !student.college || !student.department) && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <div>
+            <p className="font-semibold">Complete your student profile</p>
+            <p className="text-amber-700">Add your real student ID, college and department to finish setting up your account.</p>
+          </div>
+          <Button asChild size="sm" variant="outline" className="ml-auto"><Link href="/profile">Complete profile</Link></Button>
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={Package} label="Active listings" value={myListings} />
         <StatCard icon={Send} label="My requests" value={outPending} hint={`${outPending} pending`} />

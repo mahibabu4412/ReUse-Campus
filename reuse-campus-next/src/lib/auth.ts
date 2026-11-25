@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import { redirect } from "next/navigation";
+import { randomBytes, randomUUID } from "node:crypto";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
@@ -73,19 +74,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const email = user.email?.trim().toLowerCase();
       if (!email) return "/login?error=google";
 
-      const student = await prisma.users.findFirst({
+      let student = await prisma.users.findFirst({
         where: { email },
         select: { id: true, status: true, profile_picture: true },
       });
 
       if (!student) {
-        // Google proves the email address, but this app needs a student ID,
-        // college and department. Send them to registration with the email
-        // and name prefilled instead of creating an incomplete account.
-        const params = new URLSearchParams({ email, google: "1" });
-        if (user.name) params.set("name", user.name.slice(0, 120));
-        return `/register?${params.toString()}`;
+        // Google has already verified this email, so create the student account
+        // immediately instead of sending them to the registration form. The
+        // generated student ID is a temporary placeholder until they complete
+        // their profile; a random password keeps credentials auth unusable
+        // until they reset it (Google remains their login method).
+        const created = await prisma.users.upsert({
+          where: { email },
+          update: {},
+          create: {
+            full_name: (user.name?.trim() || email.split("@")[0]).slice(0, 120),
+            student_id: `GOOGLE-${randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase()}`,
+            email,
+            password: await bcrypt.hash(randomBytes(32).toString("hex"), 12),
+            profile_picture: user.image && user.image.length <= 255 ? user.image : null,
+            contact_preferences: "email",
+            email_verified: true,
+            status: "active",
+          },
+          select: { id: true, status: true, profile_picture: true },
+        });
+        student = created;
       }
+
       if (student.status !== "active") return "/login?error=suspended";
 
       await prisma.users.update({
