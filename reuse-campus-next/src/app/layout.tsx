@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { IframeNotice } from "@/components/iframe-notice";
 
 // Every route reads live session/database data at request time.
 // Prevent the build from prerendering DB-backed pages on Vercel.
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">
+        <IframeNotice />
         <Providers>{children}</Providers>
       </body>
     </html>
