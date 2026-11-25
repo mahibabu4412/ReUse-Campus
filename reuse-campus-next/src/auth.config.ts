@@ -6,7 +6,7 @@ import type { NextAuthConfig } from "next-auth";
  */
 export const authConfig = {
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30 },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/login" },
   trustHost: true,
   // Some browsers/proxies reject __Secure- cookies on this domain.
   // A plain host-only cookie is still sent over HTTPS and is more compatible.

@@ -9,6 +9,7 @@ export const metadata = { title: "Log in" };
 const ERROR_MESSAGES: Record<string, string> = {
   AccessDenied: "Google sign-in was cancelled or access was denied.",
   OAuthCallback: "Google sign-in failed. Please try again.",
+  OAuthCallbackError: "Google sign-in was cancelled or could not be completed. Please try again.",
   OAuthSignin: "Could not start Google sign-in. Please try again.",
   OAuthAccountNotLinked: "This email is already registered. Log in with your password instead.",
   Configuration: "Google sign-in is not configured correctly. Please use email and password.",
