@@ -11,6 +11,18 @@ export const authConfig = {
   // Some browsers/proxies reject __Secure- cookies on this domain.
   // A plain host-only cookie is still sent over HTTPS and is more compatible.
   useSecureCookies: false,
+  cookies: {
+    sessionToken: {
+      name: "authjs.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      },
+    },
+  },
   providers: [],
   callbacks: {
     async jwt({ token, user }) {
