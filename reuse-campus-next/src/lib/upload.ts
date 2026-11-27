@@ -1,8 +1,16 @@
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { put } from "@vercel/blob";
 
 const MAX_BYTES = 5 * 1024 * 1024;
+
+const CONTENT_TYPES: Record<string, string> = {
+  jpg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+};
 
 function detectExtension(buf: Buffer): string | null {
   if (buf.length > 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpg";
@@ -23,9 +31,22 @@ export async function saveUpload(
   const ext = detectExtension(buffer);
   if (!ext) return null;
 
+  const filename = `${randomUUID()}.${ext}`;
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (token) {
+    // Serverless deployments have a read-only filesystem. Persist uploads to
+    // Vercel Blob and store the public URL instead of a local path.
+    const blob = await put(`${folder}/${filename}`, buffer, {
+      access: "public",
+      token,
+      contentType: CONTENT_TYPES[ext],
+      addRandomSuffix: false,
+    });
+    return blob.url;
+  }
+
   const dir = path.join(process.cwd(), "public", "uploads", folder);
   await mkdir(dir, { recursive: true });
-  const filename = `${randomUUID()}.${ext}`;
   await writeFile(path.join(dir, filename), buffer, { flag: "wx" });
   return `uploads/${folder}/${filename}`;
 }
